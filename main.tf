@@ -12,4 +12,5 @@ module "rigor_ecs" {
   subnet_id                  = var.subnet_id
   security_group_id          = var.security_group_id
   rigor_agent_key            = var.rigor_agent_key
+  watchtower_enabled         = var.watchtower_enabled
 }

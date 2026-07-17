@@ -27,6 +27,7 @@ You need:
 - A VPC subnet ID
 - A security group ID for the ECS hosts
 - A Rigor runner token
+- Optional: `watchtower_enabled = false` if you want the agent without the Watchtower daemon
 
 Important: `rigor_agent_key` is sensitive and should not be committed with a real value. Prefer passing it via environment variable or a private tfvars file.
 

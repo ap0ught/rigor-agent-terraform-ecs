@@ -39,6 +39,8 @@ resource "aws_ecs_task_definition" "rigor_agent" {
 }
 
 resource "aws_ecs_task_definition" "watchtower" {
+  count = var.watchtower_enabled ? 1 : 0
+
   family                   = "watchtower"
   requires_compatibilities = ["EC2"]
   network_mode             = "bridge"
@@ -65,7 +67,7 @@ resource "aws_ecs_task_definition" "watchtower" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.watchtower.name
+          awslogs-group         = aws_cloudwatch_log_group.watchtower[0].name
           awslogs-region        = data.aws_region.current.name
           awslogs-stream-prefix = "ecs"
         }

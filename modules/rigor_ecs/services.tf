@@ -7,9 +7,11 @@ resource "aws_ecs_service" "rigor_agent" {
 }
 
 resource "aws_ecs_service" "watchtower" {
+  count = var.watchtower_enabled ? 1 : 0
+
   name                = "watchtower"
   cluster             = aws_ecs_cluster.this.id
-  task_definition     = aws_ecs_task_definition.watchtower.arn
+  task_definition     = aws_ecs_task_definition.watchtower[0].arn
   scheduling_strategy = "DAEMON"
   launch_type         = "EC2"
 }

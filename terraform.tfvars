@@ -6,3 +6,4 @@ asg_desired_instance_count = 1
 subnet_id                  = ""
 rigor_agent_key            = ""
 security_group_id          = ""
+watchtower_enabled         = true

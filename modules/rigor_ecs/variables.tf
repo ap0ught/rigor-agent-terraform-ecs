@@ -33,3 +33,9 @@ variable "rigor_agent_key" {
   type        = string
   sensitive   = true
 }
+
+variable "watchtower_enabled" {
+  description = "Whether to deploy the Watchtower daemon service."
+  type        = bool
+  default     = true
+}
