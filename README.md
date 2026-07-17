@@ -27,12 +27,15 @@ You need:
 - A VPC subnet ID
 - A security group ID for the ECS hosts
 - A Rigor runner token
+- A city list provided via `TF_VAR_cities` or a private tfvars file
+- Optional: `watchtower_enabled = false` if you want the agent without the Watchtower daemon
 
 Important: `rigor_agent_key` is sensitive and should not be committed with a real value. Prefer passing it via environment variable or a private tfvars file.
 
 ## Run
 
 ```sh
+export TF_VAR_cities='["New York","Los Angeles","Chicago","Houston","Phoenix","Philadelphia","San Antonio","San Diego","Dallas","San Jose"]'
 terraform init
 terraform plan
 terraform apply

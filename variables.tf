@@ -9,28 +9,20 @@ variable "ecs_cluster_name" {
   default     = "rigor_private_location"
 }
 
-variable "asg_max_instance_count" {
-  description = "Maximum number of ECS container instances."
-  type        = number
-  default     = 1
-}
-
-variable "asg_min_instance_count" {
-  description = "Minimum number of ECS container instances."
-  type        = number
-  default     = 1
-}
-
-variable "asg_desired_instance_count" {
-  description = "Desired number of ECS container instances."
-  type        = number
-  default     = 1
-}
-
 variable "asg_instance_types" {
   description = "Instance types used by the Spot Auto Scaling Group."
   type        = list(string)
   default     = ["m5.large"]
+}
+
+variable "cities" {
+  description = "List of cities to size the ECS host fleet for."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.cities) > 0
+    error_message = "Provide at least one city."
+  }
 }
 
 variable "subnet_id" {
@@ -47,4 +39,10 @@ variable "rigor_agent_key" {
   description = "Rigor runner token used by the agent container."
   type        = string
   sensitive   = true
+}
+
+variable "watchtower_enabled" {
+  description = "Whether to deploy the Watchtower daemon service."
+  type        = bool
+  default     = true
 }
