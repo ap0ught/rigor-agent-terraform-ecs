@@ -4,6 +4,11 @@ resource "aws_ecs_service" "rigor_agent" {
   task_definition = aws_ecs_task_definition.rigor_agent.arn
   desired_count   = 1
 
+  ordered_placement_strategy {
+    type  = "binpack"
+    field = "memory"
+  }
+
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.ecs_hosts.name
     weight            = 1
