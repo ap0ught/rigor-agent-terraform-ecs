@@ -4,6 +4,9 @@ locals {
     Cluster   = var.cluster_name
     ManagedBy = "Terraform"
   }
+  city_count     = length(var.cities)
+  city_min_count = floor(local.city_count / 2) + 1
+  city_max_count = local.city_min_count * 2
 }
 
 resource "aws_launch_template" "ecs_hosts" {
@@ -62,9 +65,9 @@ resource "aws_launch_template" "ecs_hosts" {
 
 resource "aws_autoscaling_group" "ecs_hosts" {
   name                = "${var.cluster_name} Docker Hosts - ${aws_launch_template.ecs_hosts.name}"
-  max_size            = var.asg_max_instance_count
-  min_size            = var.asg_min_instance_count
-  desired_capacity    = var.asg_desired_instance_count
+  max_size            = local.city_max_count
+  min_size            = local.city_min_count
+  desired_capacity    = local.city_count
   vpc_zone_identifier = [var.subnet_id]
   capacity_rebalance  = true
 
