@@ -1,31 +1,61 @@
-This is a reference project to demonstrate the launch of Rigor agents, with supporting infrastructure, on AWS ECS using Terraform.
+# rigor-agent-terraform-ecs
 
-## Structure
-This terraform project will create the following resources:
-- An ECS Custer
-- 2 ECS services:
-    1. The Rigor Agent
-    1. Watchtower DAEMON
-- An Autoscaling group with launch configuration
-- Cloudwatch log groups for each service
-- IAM roles for ECS services and instances
+Reference Terraform for launching a Rigor agent on AWS ECS.
 
-Important notes:
-- The autoscaling group uses `m5.large` instances (Rigor's instance size of choice).
-- Instances are launched as spot requests to favor cost over availability.
-- You must configure your VPC, routing tables, and security groups to allow outbound traffic to Rigor resources (should work with default settings).
-- EC2 instances will _not_ have an SSH key assigned-- you will not be able to connect to them remotely.
+This refactor keeps the original deployment model but organizes it into a root module plus a reusable `modules/rigor_ecs` module.
 
-## Configuration
-1. Create a new private location within the Rigor interface
-1. Update the `terraform.tfvars` file providing the key from the private location setup instruaction and any other changes desired
-1.
-    ```sh
-    terraform apply
-    ```
+## What it creates
 
-## More reading
-- [Getting Started with ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html)
-- [Amazon ECS-Optimized AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-ami-versions.html)
-- [Amazon ECS Container Instance IAM Role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html)
-- [Amazon ECS Service Scheduler IAM Role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service_IAM_role.html)
+- ECS cluster
+- ECS service for the Rigor agent
+- ECS daemon service for Watchtower
+- Auto Scaling Group and launch template for ECS container instances
+- IAM roles and instance profile for ECS hosts
+- CloudWatch log groups for the two ECS services
+
+## Layout
+
+- `main.tf`, `variables.tf`, `versions.tf`: root module and provider wiring
+- `modules/rigor_ecs/`: actual infrastructure implementation
+- `terraform.tfvars`: example values to copy and fill in
+
+## Before applying
+
+You need:
+
+- AWS credentials configured for the account you want to deploy into
+- A VPC subnet ID
+- A security group ID for the ECS hosts
+- A Rigor runner token
+
+Important: `rigor_agent_key` is sensitive and should not be committed with a real value. Prefer passing it via environment variable or a private tfvars file.
+
+## Run
+
+```sh
+terraform init
+terraform plan
+terraform apply
+```
+
+## Notes from the audit
+
+### Correctness and modernization
+
+- The old layout mixed provider/config, IAM, ECS services, and ASG logic at the repo root.
+- This refactor adds a proper module boundary and explicit variable types.
+- The ASG now uses a launch template instead of the older launch configuration resource.
+- The Rigor agent container is labeled for Watchtower updates, which the original config forgot to do.
+
+### Security / AWS setup issues to review
+
+- The Rigor token was previously injected as a plain environment variable. It is still sensitive here, but should ideally move to AWS Secrets Manager or SSM Parameter Store.
+- Watchtower requires access to the Docker socket, which effectively gives it host-level control. That is a real security tradeoff.
+- The original repo used a `local-exec sleep` on the instance profile, which is unreliable and removed here.
+- No SSH key is attached to the instances, so debugging is intentionally remote-first.
+
+### Suggested follow-up hardening
+
+- Move the agent token to Secrets Manager.
+- Add CloudWatch alarms for instance termination / ASG health.
+- Consider a capacity provider strategy if you want ECS-managed scaling later.
