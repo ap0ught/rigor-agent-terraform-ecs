@@ -17,9 +17,6 @@ resource "aws_launch_template" "ecs_hosts" {
 
   instance_market_options {
     market_type = "spot"
-    spot_options {
-      max_price = "0.0960"
-    }
   }
 
   metadata_options {
