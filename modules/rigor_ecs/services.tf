@@ -3,7 +3,12 @@ resource "aws_ecs_service" "rigor_agent" {
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.rigor_agent.arn
   desired_count   = 1
-  launch_type     = "EC2"
+
+  capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.ecs_hosts.name
+    weight            = 1
+    base              = 1
+  }
 }
 
 resource "aws_ecs_service" "watchtower" {

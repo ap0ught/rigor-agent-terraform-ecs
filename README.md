@@ -9,7 +9,7 @@ This refactor keeps the original deployment model but organizes it into a root m
 - ECS cluster
 - ECS service for the Rigor agent
 - ECS daemon service for Watchtower
-- Auto Scaling Group and launch template for ECS container instances
+- Auto Scaling Group, ECS capacity provider, and launch template for ECS container instances
 - IAM roles and instance profile for ECS hosts
 - CloudWatch log groups for the two ECS services
 
@@ -45,6 +45,9 @@ terraform apply
 - The old layout mixed provider/config, IAM, ECS services, and ASG logic at the repo root.
 - This refactor adds a proper module boundary and explicit variable types.
 - The ASG now uses a launch template instead of the older launch configuration resource.
+- Spot capacity is managed through an ECS capacity provider plus ASG mixed-instance policy with capacity-optimized allocation.
+- The launch template now updates its default version, uses gp3 encrypted root volumes, and keeps IMDSv2 enforced.
+- ECS Spot draining is enabled in user data so tasks have a chance to stop cleanly before interruption.
 - The Rigor agent container is labeled for Watchtower updates, which the original config forgot to do.
 
 ### Security / AWS setup issues to review

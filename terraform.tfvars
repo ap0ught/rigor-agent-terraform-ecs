@@ -3,6 +3,7 @@ region                     = "us-east-1"
 asg_max_instance_count     = 1
 asg_min_instance_count     = 1
 asg_desired_instance_count = 1
+asg_instance_types         = ["m5.large"]
 subnet_id                  = ""
 rigor_agent_key            = ""
 security_group_id          = ""

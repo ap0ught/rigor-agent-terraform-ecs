@@ -18,6 +18,11 @@ variable "asg_desired_instance_count" {
   type        = number
 }
 
+variable "asg_instance_types" {
+  description = "Instance types used by the Spot Auto Scaling Group."
+  type        = list(string)
+}
+
 variable "subnet_id" {
   description = "Subnet used by the ECS hosts."
   type        = string
